@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify
+from app.models import Job
 
 api_bp = Blueprint('api', __name__)
 
