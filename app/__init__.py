@@ -13,6 +13,6 @@ def create_app(config_class=Config, test_config=None):
     migrate.init_app(app, db) # render_as_batch=True if SQLite
 
     from app.routes import api_bp
-    app.register_blueprint(api_bp)
+    app.register_blueprint(api_bp, url_prefix='/api')
 
     return app
