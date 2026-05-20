@@ -13,6 +13,13 @@ class JobSvc:
         return db.select(Job)
 
     @classmethod
+    def fetch_by_id(cls, job_id: int) -> Job | None:
+
+        stmt = cls._active_jobs_query().where(Job.id == job_id)
+
+        return db.session.execute(stmt).scalar_one_or_none()
+
+    @classmethod
     def create_job(cls, report_type: str):
 
         new_job = Job(report_type=report_type)

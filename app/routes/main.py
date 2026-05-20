@@ -23,3 +23,17 @@ def incoming_reports():
         "ticket_status": TicketStatus.PENDING.value,
         "job_id": new_job.id
     }), 202
+
+@api_bp.get('/reports/<int:job_id>')
+def check_status(job_id):
+    existing_ticket = JobSvc.fetch_by_id(job_id)
+
+    if not existing_ticket:
+        return jsonify({"error": "Job ID does not exist"}), 404
+
+    status = {"ticket_status": existing_ticket.status.value}
+    
+    if existing_ticket.status == "Completed":
+        status["download_url"] = existing_ticket.download_url
+
+    return jsonify(status)
