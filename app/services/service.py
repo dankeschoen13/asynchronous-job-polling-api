@@ -9,19 +9,36 @@ class JobSvc:
 
     @classmethod
     def _active_jobs_query(cls):
-
+        """
+        Helper method to select Job instance ordered by date_submitted
+        """
         return db.select(Job).order_by(Job.date_submitted)
 
     @classmethod
     def fetch_by_id(cls, job_id: int) -> Job | None:
+        """
+        Fetches the Job object that matches the id
 
+        Returns:
+            Job | None: The matching Job object or none
+        """
         stmt = cls._active_jobs_query().where(Job.id == job_id)
 
         return db.session.execute(stmt).scalar_one_or_none()
 
     @classmethod
     def fetch_pending(cls, limit: int = 10) -> list[Job]:
+        """
+        Fetches a list of all pending job orders from the
+        database
 
+        Args:
+            limit: requested limit of pending job orders to be fetched.
+            Defaults to 10
+
+        Returns:
+            list[Job]: A list of matching Job objects
+        """
         stmt = cls._active_jobs_query().where(
             Job.status == TicketStatus.PENDING
         ).limit(limit)
@@ -52,8 +69,16 @@ class JobSvc:
         return True, None
 
     @classmethod
-    def create_job(cls, report_type: str):
+    def create_job(cls, report_type: str) -> Job:
+        """
+        Creates a new job order.
 
+        Args:
+            report_type: the type of report
+
+        Returns:
+            Job: the Job object that was just added to the database.
+        """
         new_job = Job(report_type=report_type)
 
         try:
