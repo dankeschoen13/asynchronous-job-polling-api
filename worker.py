@@ -1,8 +1,11 @@
 import time
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from app import create_app
 from app.services import JobSvc
 from app.models import TicketStatus
-
 
 app = create_app()
 
