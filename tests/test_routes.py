@@ -1,5 +1,6 @@
 from app.models import TicketStatus
 from app.services import JobSvc
+from unittest.mock import patch
 
 def test_incoming_reports_success(client):
     """
@@ -79,3 +80,18 @@ def test_check_status_completed(client, app):
     assert data['ticket_status'] == TicketStatus.COMPLETED.value
     assert 'download_url' in data
     assert data['download_url'] == fake_job.download_url
+
+def test_incoming_reports_server_error(client):
+    """
+    Test that a database failure during job creation gracefully returns a 500 error.
+    """
+    payload = {"report_type": "annual_fake_report"}
+
+    # Mock job creation with exception
+    with patch('app.routes.main.JobSvc.create_job', side_effect=ValueError("Simulated database crash!")):
+        # API Call while the exception is in effect
+        response = client.post('/api/reports', json=payload)
+
+    # Assertions
+    assert response.status_code == 500
+    assert "error" in response.json
